@@ -1,0 +1,52 @@
+<!doctype html>
+<meta charset="utf-8" />
+<canvas id="c" width="1080" height="480"></canvas>
+
+<script>
+    const ctx = document.getElementById('c').getContext('2d');
+
+    window.addEventListener('load', () => {
+        function sinPoint(point, offset, { originX = 100, originY = 100, width = 20, height = 20, density = 0.0025, f = Math.sin }) {
+            point.x = width * point.angle + originX;
+            point.y = height * f(point.angle + offset) + originY;
+            point.angle += density * Math.PI;
+        }
+
+        function sinCirclePoint(point, offset, { originX = 320, originY = 240, r = 200, width = 10, height = 10, density = 0.0025, f = Math.sin }) {
+            width *= 0.01;
+            height *= 0.01;
+            let addon = height * r * Math.sin(point.angle / width + offset);
+            point.x = originX + (r + addon) * Math.cos(point.angle);
+            point.y = originY + (r + addon) * Math.sin(point.angle);
+            point.angle += density * Math.PI;
+        }
+
+        let points = Array(4).fill({ x: 100, y: 100, angle: 0 });
+
+        function draw() {
+            requestAnimationFrame(draw);
+
+            let off = 0;
+            let offoff = Math.PI * (1 / points.length * 2);
+
+            for (let point of points) {
+                sinCirclePoint(point, off, {
+                    width: 10,
+                    height: 10,
+                    originX: 320,
+                    originY: 240,
+                    r: 200,
+                    density: 0.0003
+                });
+
+                off += offoff;
+
+                ctx.fillRect(point.x, point.y, 8, 8);
+            }
+
+            ctx.restore();
+        }
+
+        requestAnimationFrame(draw);
+    });
+</script>
